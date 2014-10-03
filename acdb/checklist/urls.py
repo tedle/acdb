@@ -3,6 +3,7 @@ from checklist import views
 
 urlpatterns = patterns(
     '',
-    url(r'^(?P<completion_data>[a-zA-Z0-9]*)$',
-        views.checklist, name='checklist'),
+    url(r'^$', views.checklist, name='checklist'),
+    url(r'^import/(?P<completion_data>[a-zA-Z0-9]*)$',
+        views.import_data, name='import_data'),
 )
