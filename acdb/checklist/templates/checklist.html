@@ -1,11 +1,5 @@
-<h1>Hello!</h1>
-<ul>
-{% for fish in fish_list %}
-    <li>{{ fish.name }}</li>
-{% endfor %}
-</ul>
-<ul>
-{% for bug in bug_list %}
-    <li>{{ bug.name }}</li>
-{% endfor %}
-</ul>
+{% extends "base.html" %}
+{% block body %}
+<body ng-controller="checklistController">
+</body>
+{% endblock %}

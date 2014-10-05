@@ -11,7 +11,7 @@ def checklist(request):
         'fish_list': fish_list,
         'bug_list': bug_list
     }
-    return render(request, 'checklist.html', context)
+    return render(request, 'base.html')
 
 
 def import_data(request, completion_data):
