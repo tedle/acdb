@@ -2,6 +2,8 @@
 <table>
     <thead>
         <tr>
+            <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
+            <th ng-click="sort.set('available')">&#x1F553;</th>
             <th ng-click="sort.set('slot')">Slot</th>
             <th ng-click="sort.set('name')">Name</th>
             <th ng-click="sort.set(['location', 'name'])">Location</th>
@@ -10,7 +12,9 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse">
+        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse" ng-class="{caught: fish.caught}">
+            <td><input type="checkbox" ng-model="fish.caught"></td>
+            <td>{{fish.caught && ':)' || ':('}}</td>
             <td>#{{fish.slot}}</td>
             <td>{{fish.name}}</td>
             <td>{{fish.location}}</td>
