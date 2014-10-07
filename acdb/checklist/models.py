@@ -15,7 +15,8 @@ class Bug(models.Model):
 
 
 class BugSchedule(models.Model):
-    bug = models.ForeignKey(Bug)
+    id = models.AutoField(primary_key=True)
+    bug = models.ForeignKey(Bug, db_column='bug')
     month_start = models.IntegerField(blank=False)
     month_end = models.IntegerField(blank=False)
     day_start = models.IntegerField(blank=False)
@@ -41,7 +42,8 @@ class Fish(models.Model):
 
 
 class FishSchedule(models.Model):
-    fish = models.ForeignKey(Fish)
+    id = models.AutoField(primary_key=True)
+    fish = models.ForeignKey(Fish, db_column='fish')
     month_start = models.IntegerField(blank=False)
     month_end = models.IntegerField(blank=False)
     day_start = models.IntegerField(blank=False)
