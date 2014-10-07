@@ -1,1 +1,23 @@
 <h2>!!!!!!!{{test.words}}</h2>
+<table>
+    <thead>
+        <tr>
+            <th ng-click="sort.set('slot')">Slot</th>
+            <th ng-click="sort.set('name')">Name</th>
+            <th ng-click="sort.set(['location', 'name'])">Location</th>
+            <th ng-click="sort.set('slot')">Season</th>
+            <th ng-click="sort.set('value')">Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse">
+            <td>#{{fish.slot}}</td>
+            <td>{{fish.name}}</td>
+            <td>{{fish.location}}</td>
+            <td>fill this in!</td>
+            <td>{{fish.value}}</td>
+        </tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+</table>

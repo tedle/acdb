@@ -24,11 +24,36 @@ acdbApp.factory('acdbApi', ['$http', function($http) {
 
 acdbApp.controller('checklistController', ['$scope', 'acdbApi',
 function($scope, acdbApi) {
-    $scope.test = {};
-    $scope.test.words = "hio hey :)";
+    $scope.test = {
+        words: "hey hio hey :)",
+    };
+
+    $scope.sort = {
+        order: ['slot'],
+        reverse: false,
+
+        set: function(new_order) {
+            // Dirty hack to compare 2 string arrays
+            if (this.order.toString() == new_order.toString()) {
+                $scope.sort.reverse = !this.reverse;
+            }
+            else {
+                $scope.sort.reverse = false;
+            }
+            $scope.sort.order = new_order;
+        }
+    };
+
+    $scope.species = {
+        fish: {},
+        bug: {}
+    };
+
+    // Timeout for testing latency
     setTimeout(function() {
     acdbApi.fish().success(function (data){
-        $scope.test.words = data;
+        $scope.species.fish = data;
+        $scope.test.words = $scope.species.fish[5].name
     });
     }, 1000);
 }]);
