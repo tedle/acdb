@@ -28,7 +28,7 @@ def api_species(request, species):
             'hour': {'start': s['hour_start'], 'end': s['hour_end']}
         }
         species_response[s['species_id']-1] \
-            .setdefault('available', []) \
+            .setdefault('schedule', []) \
             .append(dict_schedule)
     return HttpResponse(json.dumps(species_response, indent=4))
 

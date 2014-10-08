@@ -15,11 +15,11 @@
     <tbody>
         <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{caught: fish.caught}">
             <td><input type="checkbox" ng-model="fish.caught"></td>
-            <td>{{fish.caught && ':)' || ':('}}</td>
+            <td>{{fish.available && ':)' || ':('}}</td>
             <td>#{{fish.slot}}</td>
             <td>{{fish.name}}</td>
             <td>{{fish.location}}</td>
-            <td>fill this in!</td>
+            <td>{{fish.season}}</td>
             <td>{{fish.value}}</td>
         </tr>
     </tbody>
