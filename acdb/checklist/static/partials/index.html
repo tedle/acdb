@@ -1,4 +1,5 @@
 <h2>!!!!!!!{{test.words}}</h2>
+<input type="text" ng-model="searchFilter.name" placeholder="Fish">
 <table>
     <thead>
         <tr>
@@ -12,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse" ng-class="{caught: fish.caught}">
+        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{caught: fish.caught}">
             <td><input type="checkbox" ng-model="fish.caught"></td>
             <td>{{fish.caught && ':)' || ':('}}</td>
             <td>#{{fish.slot}}</td>

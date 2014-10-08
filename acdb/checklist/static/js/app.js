@@ -12,16 +12,14 @@ function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
-acdbApp.factory('acdbApi', ['$http',
+acdbApp.service('acdbApi', ['$http',
 function($http) {
-    var service = {};
-    service.bug = function(){
+    this.bug = function(){
         return $http.get('/api/bug/all');
     }
-    service.fish = function(){
+    this.fish = function(){
         return $http.get('/api/fish/all');
     }
-    return service;
 }]);
 
 acdbApp.controller('checklistController', ['$scope', 'acdbApi',
@@ -51,14 +49,10 @@ function($scope, acdbApi) {
         bug: {}
     };
 
-    // Timeout for testing latency
-    //setTimeout(function() {
     acdbApi.fish().success(function (data){
-        angular.forEach(data, function(value, key) {
-            value.caught = false;
+        angular.forEach(data, function(fish, key) {
+            fish.caught = false;
         });
         $scope.species.fish = data;
-        $scope.test.words = $scope.species.fish[5].name
     });
-    //}, 1000);
 }]);
