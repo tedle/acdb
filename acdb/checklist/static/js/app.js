@@ -12,6 +12,37 @@ function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
+acdbApp.controller('ChecklistController', ['$scope', 'acdbApi',
+function($scope, acdbApi) {
+    $scope.test = {
+        words: "hey hio hey :)",
+    };
+
+    $scope.sort = {
+        order: ['slot'],
+        reverse: false,
+
+        set: function(order) {
+            // Dirty hack to compare 2 string arrays
+            if (this.order.toString() == order.toString()) {
+                $scope.sort.reverse = !this.reverse;
+            } else {
+                $scope.sort.reverse = false;
+            }
+            $scope.sort.order = order;
+        }
+    };
+
+    $scope.species = {
+        fish: {},
+        bug: {}
+    };
+
+    acdbApi.fish().then(function (data){
+        $scope.species.fish = data;
+    });
+}]);
+
 acdbApp.service('acdbApi', ['$http', 'species',
 function($http, species) {
     function get(url) {
@@ -101,35 +132,4 @@ function ($filter) {
         });
         return pretty;
     }
-}]);
-
-acdbApp.controller('ChecklistController', ['$scope', 'acdbApi',
-function($scope, acdbApi) {
-    $scope.test = {
-        words: "hey hio hey :)",
-    };
-
-    $scope.sort = {
-        order: ['slot'],
-        reverse: false,
-
-        set: function(order) {
-            // Dirty hack to compare 2 string arrays
-            if (this.order.toString() == order.toString()) {
-                $scope.sort.reverse = !this.reverse;
-            } else {
-                $scope.sort.reverse = false;
-            }
-            $scope.sort.order = order;
-        }
-    };
-
-    $scope.species = {
-        fish: {},
-        bug: {}
-    };
-
-    acdbApi.fish().then(function (data){
-        $scope.species.fish = data;
-    });
 }]);
