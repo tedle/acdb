@@ -1,5 +1,14 @@
 <h2>!!!!!!!{{test.words}}</h2>
+<button ng-click="showTimeControls = !showTimeControls">{{date | date: 'MMMM dd, ha'}}</button>
 <input type="text" ng-model="searchFilter.name" placeholder="Fish">
+<div ng-show="showTimeControls">
+    <button>&lt;</button>
+    {{date | date: 'MMMM'}}
+    <button>&gt;</button>
+    <button>&lt;</button>
+    {{date | date: 'ha'}}
+    <button>&gt;</button>
+</div>
 <table>
     <thead>
         <tr>

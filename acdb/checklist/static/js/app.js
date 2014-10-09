@@ -18,6 +18,8 @@ function($scope, acdbApi) {
         words: "hey hio hey :)",
     };
 
+    $scope.date = new Date();
+
     $scope.sort = {
         order: ['slot'],
         reverse: false,
