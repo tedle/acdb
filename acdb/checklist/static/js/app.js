@@ -12,8 +12,8 @@ function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
-acdbApp.controller('ChecklistController', ['$scope', 'acdbApi', 'date',
-function($scope, acdbApi, date) {
+acdbApp.controller('ChecklistController', ['$scope', 'date', 'encyclopedia', 'saveData', 
+function($scope, date, encyclopedia, saveData) {
     $scope.test = {
         words: "hey hio hey :)",
     };
@@ -36,13 +36,10 @@ function($scope, acdbApi, date) {
     };
 
     $scope.species = {
-        fish: {},
-        bug: {}
+        fish: encyclopedia.fish(),
+        bugs: encyclopedia.bugs()
     };
-
-    acdbApi.fish().then(function (data){
-        $scope.species.fish = data;
-    });
+    $scope.saveData = saveData;
 }]);
 
 acdbApp.service('acdbApi', ['$http', 'Species',
@@ -66,7 +63,7 @@ function($http, Species) {
         return promise;
     }
 
-    this.bug = function(){
+    this.bugs = function(){
         return get('/api/bug/all');
     }
     this.fish = function(){
@@ -77,17 +74,130 @@ function($http, Species) {
 acdbApp.service('date', [
 function () {
     var date = new Date();
+    var monthOffset = 0;
+    var dateOffset = 0;
+    var hoursOffset = 0;
     this.get = function() {
+        date = new Date();
+        date.setMonth(date.getMonth()+monthOffset);
+        date.setDate(date.getDate()+dateOffset);
+        date.setHours(date.getHours()+hoursOffset);
         return date;
     }
     this.incMonth = function(num) {
-        date.setMonth(date.getMonth()+num);
+        monthOffset += num;
     }
     this.incDate = function(num) {
-        date.setDate(date.getDate()+num);
+        dateOffset += num;
     }
     this.incHours = function(num) {
-        date.setHours(date.getHours()+num);
+        hoursOffset += num;
+    }
+    this.offsetAsHours = function() {
+        return 1000;
+    }
+}]);
+
+acdbApp.service('encyclopedia', ['acdbApi', 'Species',
+function(acdbApi, Species) {
+    // Need local vars with getters and setters because promises cant see 'this'
+    var fish = new Array();
+    var bugs = new Array();
+
+    this.fish = function() {
+        return fish;
+    }
+    this.bugs = function() {
+        return bugs;
+    }
+
+    // Need to update arrays manually to keep obj reference
+    acdbApi.fish().then(function (data){
+        data.forEach(function(f) {
+            fish[f.slot-1] = f;
+        });
+    });
+    acdbApi.bugs().then(function (data){
+        data.forEach(function(b) {
+            bugs[b.slot-1] = b;
+        });
+    });
+}]);
+
+acdbApp.service('saveData', ['date', 'encyclopedia',
+function (date, encyclopedia) {
+    var BASE64_REPLACE_SET = [
+        ['/', '_'],
+        ['+', '-'],
+        ['=', '.']
+    ];
+    var NUM_FISH = 64;
+    var NUM_BUGS = 64;
+
+    this.save = function() {
+        var fish = encyclopedia.fish();
+        var bugs = encyclopedia.bugs();
+        var fishCaught = new Array(NUM_FISH);
+        var bugsCaught = new Array(NUM_BUGS);
+        var hoursOffset = date.offsetAsHours();
+
+        if (fish.length != fishCaught.length || bugs.length != bugsCaught.length) {
+            throw "[SaveData]: Unexpected number of species";
+        }
+
+        // Preparing data
+        fish.forEach(function(f) {
+            fishCaught[f.slot-1] = Boolean(f.caught);
+        });
+        bugs.forEach(function(b) {
+            bugsCaught[b.slot-1] = Boolean(b.caught);
+        });
+        offsetBits = unpackInt(hoursOffset);
+        saveBits = fishCaught.concat(bugsCaught, offsetBits);
+        console.log(saveBits);
+
+        // Packing
+        var rawSaveStr = "";
+        for (var i = 0; i < saveBits.length; i += 8) {
+            var byteArray = saveBits.slice(i, i + 8);
+            rawSaveStr += String.fromCharCode(packByte(byteArray));
+        }
+
+        console.log(encodeSafeBase64(rawSaveStr));
+    }
+
+    function decodeSafeBase64(baseStr) {
+        BASE64_REPLACE_SET.forEach(function(r) {
+            baseStr = baseStr.split(r[1]).join(r[0]);
+        });
+        return atob(baseStr);
+    }
+
+    function encodeSafeBase64(byteStr) {
+        var baseStr = btoa(byteStr);
+        BASE64_REPLACE_SET.forEach(function(r) {
+            baseStr = baseStr.split(r[0]).join(r[1]);
+        });
+        return baseStr;
+    }
+
+    function packByte(unpackedByte) {
+        // | 0 to force int
+        var packedByte = 0 | 0;
+        for(var i = 0; i < 8; i++) {
+            packedByte |= unpackedByte[i] << (7-i);
+        }
+        return packedByte;
+    }
+
+    function unpackInt(packedInt) {
+        // | 0 to force int
+        packedInt |= 0;
+        var unpackedInt = new Array(32);
+        for(var i = 0; i < 32; i++) {
+            unpackedInt[i] = Boolean((packedInt >> 31-i) & 1);
+        }
+        return unpackedInt;
     }
 }]);
 
@@ -101,7 +211,6 @@ function ($filter, date) {
         this.value = value;
         this.caught = false;
         this.season = prettifySeason(this.schedule);
-
     }
 
     Species.prototype.isAvailable = function() {

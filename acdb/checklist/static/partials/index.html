@@ -1,4 +1,5 @@
 <h2>!!!!!!!{{test.words}}</h2>
+<button ng-click="saveData.save()">Test Save</button><br>
 <button ng-click="showTimeControls = !showTimeControls">{{date.get() | date: 'MMMM dd, ha'}}</button>
 <input type="text" ng-model="searchFilter.name" placeholder="Fish">
 <div ng-show="showTimeControls">
@@ -16,11 +17,11 @@
     <thead>
         <tr>
             <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
-            <th ng-click="sort.set('isAvailable()')">&#x1F553;</th>
+            <th ng-click="sort.set(['-isAvailable()', 'caught', 'slot'])">&#x1F553;</th>
             <th ng-click="sort.set('slot')">Slot</th>
             <th ng-click="sort.set('name')">Name</th>
             <th ng-click="sort.set(['location', 'name'])">Location</th>
-            <th ng-click="sort.set('slot')">Season</th>
+            <th ng-click="sort.set('season')">Season</th>
             <th ng-click="sort.set('value')">Value</th>
         </tr>
     </thead>
