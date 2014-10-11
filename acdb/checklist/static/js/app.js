@@ -71,12 +71,41 @@ function($http, Species) {
     }
 }]);
 
-acdbApp.service('date', [
-function () {
+acdbApp.service('cookie', [
+function() {
+    this.set = function(name, value, days) {
+        var expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + expiryDate.toUTCString();
+        document.cookie = name + "=" + value + "; " + expires;
+    }
+
+    this.get = function(name) {
+        name += "=";
+        var cookieArray = document.cookie.split(';');
+        for (var i = 0; i < cookieArray.length; i++) {
+            var c = cookieArray[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) != -1) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+}]);
+
+acdbApp.service('date', ['$interval',
+function($interval) {
     var date = new Date();
     var monthOffset = 0;
     var dateOffset = 0;
     var hoursOffset = 0;
+
+    // Update the clock once a minute (only need hourly resolution)
+    $interval(this.get, 60 * 1000);
+
     this.get = function() {
         date = new Date();
         date.setMonth(date.getMonth()+monthOffset);
@@ -112,20 +141,20 @@ function(acdbApi, Species) {
     }
 
     // Need to update arrays manually to keep obj reference
-    acdbApi.fish().then(function (data){
+    acdbApi.fish().then(function(data){
         data.forEach(function(f) {
             fish[f.slot-1] = f;
         });
     });
-    acdbApi.bugs().then(function (data){
+    acdbApi.bugs().then(function(data){
         data.forEach(function(b) {
             bugs[b.slot-1] = b;
         });
     });
 }]);
 
-acdbApp.service('saveData', ['date', 'encyclopedia',
-function (date, encyclopedia) {
+acdbApp.service('saveData', ['date', 'cookie', 'encyclopedia',
+function(date, cookie, encyclopedia) {
     var BASE64_REPLACE_SET = [
         ['/', '_'],
         ['+', '-'],
@@ -133,15 +162,34 @@ function (date, encyclopedia) {
     ];
     var NUM_FISH = 64;
     var NUM_BUGS = 64;
+    // Ensure we can't save before having loaded our data
+    var loaded = false;
 
     this.save = function() {
-        var fish = encyclopedia.fish();
-        var bugs = encyclopedia.bugs();
-        var hoursOffset = date.offsetAsHours();
-        var saveStr = this.encodeSaveStr(fish, bugs, hoursOffset);
+        if (loaded) {
+            var fish = encyclopedia.fish();
+            var bugs = encyclopedia.bugs();
+            var hoursOffset = date.offsetAsHours();
+            var saveStr = this.encodeSaveStr(fish, bugs, hoursOffset);
+            cookie.set('checklist', saveStr, 365);
+        }
     }
 
     this.load = function() {
+        var saveStr = cookie.get('checklist');
+        // First visit
+        if (saveStr == "") {
+            loaded = true;
+            return;
+        }
+        data = this.decodeSaveStr(saveStr);
+        encyclopedia.fish().forEach(function(fish) {
+            fish.caught = data.fish[fish.slot-1];
+        });
+        encyclopedia.bugs().forEach(function(bug) {
+            bug.caught = data.bugs[bug.slot-1];
+        });
+        loaded = true;
     }
 
     this.encodeSaveStr = function(fish, bugs, hoursOffset) {
@@ -268,7 +316,7 @@ function (date, encyclopedia) {
 }]);
 
 acdbApp.factory('Species', ['$filter', 'date',
-function ($filter, date) {
+function($filter, date) {
     function Species(slot, name, habitat, schedule, value) {
         this.slot = slot;
         this.name = name;
