@@ -137,9 +137,16 @@ function (date, encyclopedia) {
     this.save = function() {
         var fish = encyclopedia.fish();
         var bugs = encyclopedia.bugs();
+        var hoursOffset = date.offsetAsHours();
+        var saveStr = this.encodeSaveStr(fish, bugs, hoursOffset);
+    }
+
+    this.load = function() {
+    }
+
+    this.encodeSaveStr = function(fish, bugs, hoursOffset) {
         var fishCaught = new Array(NUM_FISH);
         var bugsCaught = new Array(NUM_BUGS);
-        var hoursOffset = date.offsetAsHours();
 
         if (fish.length != fishCaught.length || bugs.length != bugsCaught.length) {
             throw "[SaveData]: Unexpected number of species";
@@ -154,7 +161,6 @@ function (date, encyclopedia) {
         });
         offsetBits = unpackInt(hoursOffset);
         saveBits = fishCaught.concat(bugsCaught, offsetBits);
-        console.log(saveBits);
 
         // Packing
         var rawSaveStr = "";
@@ -163,7 +169,47 @@ function (date, encyclopedia) {
             rawSaveStr += String.fromCharCode(packByte(byteArray));
         }
 
-        console.log(encodeSafeBase64(rawSaveStr));
+        return encodeSafeBase64(rawSaveStr);
+    }
+
+    this.decodeSaveStr = function(saveStr) {
+        var fish = encyclopedia.fish();
+        var bugs = encyclopedia.bugs();
+        var fishCaught = new Array(NUM_FISH);
+        var bugsCaught = new Array(NUM_BUGS);
+        var hoursOffset = 0;
+        var rawSaveStr = decodeSafeBase64(saveStr);
+        var saveBits = new Array();
+
+        if (fish.length != fishCaught.length || bugs.length != bugsCaught.length) {
+            throw "[LoadData]: Unexpected number of species";
+        }
+
+        angular.forEach(rawSaveStr, function(b) {
+            var byteArray = unpackByte(b);
+            saveBits = saveBits.concat(byteArray);
+        });
+
+        if (saveBits.length != fish.length + bugs.length + 32) {
+            throw "[LoadData]: Corrupted save data";
+        }
+
+        // Repackage savedata
+        saveBits.slice(0, fish.length).forEach(function(f, i) {
+            fishCaught[i] = Boolean(f);
+        });
+        saveBits.slice(fish.length, fish.length + bugs.length).forEach(function(b, i) {
+            bugsCaught[i] = Boolean(b);
+        });
+        unpackedHours = saveBits.slice(fish.length + bugs.length);
+        hoursOffset = packInt(unpackedHours);
+
+        var unpackedData = {
+            fish: fishCaught,
+            bugs: bugsCaught,
+            hours: hoursOffset
+        };
+        return unpackedData;
     }
 
     function decodeSafeBase64(baseStr) {
@@ -188,6 +234,26 @@ function (date, encyclopedia) {
             packedByte |= unpackedByte[i] << (7-i);
         }
         return packedByte;
+    }
+
+    function unpackByte(packedByte) {
+        // Force to int
+        packedByte = packedByte.charCodeAt(0);
+
+        var unpackedByte = new Array(8);
+        for(var i = 0; i < 8; i++) {
+            unpackedByte[i] |= Boolean((packedByte >> (7-i)) & 1);
+        }
+        return unpackedByte;
+    }
+
+    function packInt(unpackedInt) {
+        // | 0 to force int
+        var packedInt = 0 | 0;
+        for(var i = 0; i < 32; i++) {
+            packedInt |= unpackedInt[i] << 31-i;
+        }
+        return packedInt;
     }
 
     function unpackInt(packedInt) {
