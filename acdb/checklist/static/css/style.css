@@ -1,4 +1,4 @@
-tr {
+/* tr {
     background: #eee;
 }
 
@@ -8,4 +8,8 @@ tr {
 
 .available {
     background: #eef;
-}
+}*/
+/*.table tbody tr > td.success {
+  background-color: #dff0d8 !important;
+}*/
+

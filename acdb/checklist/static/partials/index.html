@@ -15,42 +15,44 @@
     <button ng-click="date.incHours(1)">&gt;</button>
 </div>
     <br>
-    <button ng-click="tab.active = 'fish'">Tab 1</button>
-    <button ng-click="tab.active = 'bugs'">Tab 2</button>
-<table>
-    <thead>
-        <tr>
-            <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
-            <th ng-click="sort.set(['-isAvailable()', 'caught', 'slot'])">&#x1F553;</th>
-            <th ng-click="sort.set('slot')">Slot</th>
-            <th ng-click="sort.set('name')">Name</th>
-            <th ng-click="sort.set(['location', 'name'])">Location</th>
-            <th ng-click="sort.set('season')">Season</th>
-            <th ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow Size</th>
-            <th ng-click="sort.set('value')">Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='fish'" ng-class="{caught: fish.caught, available: fish.isAvailable() > 1}">
-            <td><input type="checkbox" ng-model="fish.caught"></td>
-            <td>{{fish.isAvailable()}}</td>
-            <td>#{{fish.slot}}</td>
-            <td>{{fish.name}}</td>
-            <td>{{fish.habitat}}</td>
-            <td>{{fish.season}}</td>
-            <td>{{fish.shadow}}</td>
-            <td>{{fish.value}}</td>
-        </tr>
-        <tr ng-repeat="bug in species.bugs | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='bugs'" ng-class="{caught: bug.caught, available: bug.isAvailable()}">
-            <td><input type="checkbox" ng-model="bug.caught"></td>
-            <td>{{bug.isAvailable()}}</td>
-            <td>#{{bug.slot}}</td>
-            <td>{{bug.name}}</td>
-            <td>{{bug.habitat}}</td>
-            <td>{{bug.season}}</td>
-            <td>{{bug.value}}</td>
-        </tr>
-    </tbody>
-    <tfoot>
-    </tfoot>
-</table>
+    <button ng-click="tab.active = 'fish'">Fish</button>
+    <button ng-click="tab.active = 'bugs'">Bugs</button>
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
+                <th ng-click="sort.set(['-isAvailable()', 'caught', 'slot'])">&#x1F553;</th>
+                <th ng-click="sort.set('slot')">#</th>
+                <th ng-click="sort.set('name')">Name</th>
+                <th ng-click="sort.set(['location', 'name'])">Location</th>
+                <th ng-click="sort.set('season')">Season</th>
+                <th ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow Size</th>
+                <th ng-click="sort.set('value')">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='fish'" ng-class="{success: fish.caught}">
+                <td><input type="checkbox" ng-model="fish.caught"></td>
+                <td>{{fish.isAvailable()}}</td>
+                <td>{{fish.slot}}</td>
+                <td>{{fish.name}}</td>
+                <td>{{fish.habitat}}</td>
+                <td>{{fish.season}}</td>
+                <td>{{fish.shadow}}</td>
+                <td>{{fish.value}}</td>
+            </tr>
+            <tr ng-repeat="bug in species.bugs | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='bugs'" ng-class="{success: bug.caught}">
+                <td><input type="checkbox" ng-model="bug.caught"></td>
+                <td>{{bug.isAvailable()}}</td>
+                <td>{{bug.slot}}</td>
+                <td>{{bug.name}}</td>
+                <td>{{bug.habitat}}</td>
+                <td>{{bug.season}}</td>
+                <td>{{bug.value}}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
