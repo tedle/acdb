@@ -329,6 +329,7 @@ function($filter, date) {
 
     Species.prototype.isAvailable = function() {
         var seasonal = false;
+        var tempSeasonal = false;
         var hourly = false;
         angular.forEach(this.schedule, function(timeslot) {
             // Check month range
@@ -340,10 +341,10 @@ function($filter, date) {
             end.setDate(timeslot.day.end);
 
             if (date.get() >= start && date.get() <= end) {
-                seasonal = true;
+                seasonal = tempSeasonal = true;
             } else if ((date.get() >= start || date.get() <= end) &&
                        (timeslot.month.start > timeslot.month.end)) {
-                seasonal = true;
+                seasonal = tempSeasonal = true;
             }
             // Check hour range
             var start = new Date(date.get());
@@ -358,11 +359,17 @@ function($filter, date) {
                 hourly = true;
             }
             // Reset for next iteration
-            if (seasonal != hourly) {
-                seasonal = hourly = false;
+            if (tempSeasonal != hourly) {
+                tempSeasonal = hourly = false;
             }
         }, this);
-        return seasonal && hourly;
+        if (tempSeasonal && hourly) {
+            return 2;
+        } else if (seasonal) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     function prettifySeason(schedule) {

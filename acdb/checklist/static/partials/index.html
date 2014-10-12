@@ -2,7 +2,7 @@
 <button ng-click="saveData.save()">Test Save</button>
 <button ng-click="saveData.load()">Test Load</button><br>
 <button ng-click="showTimeControls = !showTimeControls">{{date.get() | date: 'MMMM dd, ha'}}</button>
-<input type="text" ng-model="searchFilter.name" placeholder="Fish">
+<input type="text" ng-model="searchFilter.name" placeholder="Search">
 <div ng-show="showTimeControls">
     <button ng-click="date.incMonth(-1)">&lt;</button>
     {{date.get() | date: 'MMMM'}}
@@ -14,6 +14,9 @@
     {{date.get() | date: 'ha'}}
     <button ng-click="date.incHours(1)">&gt;</button>
 </div>
+    <br>
+    <button ng-click="tab.active = 'fish'">Tab 1</button>
+    <button ng-click="tab.active = 'bugs'">Tab 2</button>
 <table>
     <thead>
         <tr>
@@ -23,18 +26,29 @@
             <th ng-click="sort.set('name')">Name</th>
             <th ng-click="sort.set(['location', 'name'])">Location</th>
             <th ng-click="sort.set('season')">Season</th>
+            <th ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow Size</th>
             <th ng-click="sort.set('value')">Value</th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{caught: fish.caught, available: fish.isAvailable()}">
+        <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='fish'" ng-class="{caught: fish.caught, available: fish.isAvailable() > 1}">
             <td><input type="checkbox" ng-model="fish.caught"></td>
             <td>{{fish.isAvailable()}}</td>
             <td>#{{fish.slot}}</td>
             <td>{{fish.name}}</td>
             <td>{{fish.habitat}}</td>
             <td>{{fish.season}}</td>
+            <td>{{fish.shadow}}</td>
             <td>{{fish.value}}</td>
+        </tr>
+        <tr ng-repeat="bug in species.bugs | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='bugs'" ng-class="{caught: bug.caught, available: bug.isAvailable()}">
+            <td><input type="checkbox" ng-model="bug.caught"></td>
+            <td>{{bug.isAvailable()}}</td>
+            <td>#{{bug.slot}}</td>
+            <td>{{bug.name}}</td>
+            <td>{{bug.habitat}}</td>
+            <td>{{bug.season}}</td>
+            <td>{{bug.value}}</td>
         </tr>
     </tbody>
     <tfoot>
