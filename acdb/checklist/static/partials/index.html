@@ -13,6 +13,13 @@
         </div>
     </div>
 </div-->
+<div class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header pull-left">
+            <a class="navbar-brand" href="/">AC:CF Checklist</a>
+        </div>
+    </div>
+</div>
 <div class="container">
     <!--button ng-click="showTimeControls = !showTimeControls">{{date.get() | date: 'MMMM dd, ha'}}</button>
     <input type="text" ng-model="searchFilter.name" placeholder="Search">
@@ -27,33 +34,33 @@
         {{date.get() | date: 'ha'}}
         <button ng-click="date.incHours(1)">&gt;</button>
     </div-->
-    <div class="row">
+    <!--div class="row">
         <h2>AC:CF Checklist</h2>
-    </div>
+    </div-->
     <div class="row">
-        <div class="form-inline">
-            <!--div class="form-group col-sm-3 col-md-2">
-                <div class="btn-group btn-group-justified">
-                    <div class="btn-group">
-                        <button ng-click="tab.active='fish'" ng-class="{active: tab.active=='fish'}" class="btn btn-default btn-add">Fish</button>
-                    </div>
-                    <div class="btn-group">
-                        <button ng-click="tab.active='bugs'" ng-class="{active: tab.active=='bugs'}" class="btn btn-default btn-add">Bugs</button>
-                    </div>
+        <!--div class="form-group col-sm-3 col-md-2">
+            <div class="btn-group btn-group-justified">
+                <div class="btn-group">
+                    <button ng-click="tab.active='fish'" ng-class="{active: tab.active=='fish'}" class="btn btn-default btn-add">Fish</button>
                 </div>
-            </div-->
-            <div class="form-group col-sm-3">
-                <button ng-click="showTimeControls = !showTimeControls" class="btn btn-block btn-default">{{date.get() | date: 'MMMM dd, ha'}}</button>
+                <div class="btn-group">
+                    <button ng-click="tab.active='bugs'" ng-class="{active: tab.active=='bugs'}" class="btn btn-default btn-add">Bugs</button>
+                </div>
             </div>
-            <div class="form-group col-sm-4 col-md-3">
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-                    <input type="text" ng-model="searchFilter.name" class="form-control" placeholder="Filter species">
-                </div>
+        </div-->
+        <div class="form-group col-sm-3">
+            <button ng-click="showTimeControls = !showTimeControls" class="btn btn-block btn-default">{{date.get() | date: 'MMMM dd, ha'}}</button>
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <div class="input-group">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                <input type="text" ng-model="searchFilter.name" class="form-control" placeholder="Filter species">
             </div>
         </div>
-        <div class="form-inline col-xs-12 col-sm-10" ng-show="showTimeControls">
-            <div class="input-group col-sm-3">
+    </div>
+    <div class="row well form-group" ng-show="showTimeControls">
+        <div class="col-sm-4 col-md-3">
+            <div class="input-group">
                 <span class="input-group-btn">
                     <button ng-click="date.incMonth(-1)" class="btn btn-default">
                         <span class="glyphicon glyphicon-chevron-left"></span>
@@ -66,7 +73,9 @@
                     </button>
                 </span>
             </div>
-            <div class="input-group col-sm-2">
+        </div>
+        <div class="col-sm-3 col-md-2">
+            <div class="input-group">
                 <span class="input-group-btn">
                     <button ng-click="date.incDate(-1)" class="btn btn-default">
                         <span class="glyphicon glyphicon-chevron-left"></span>
@@ -79,7 +88,9 @@
                     </button>
                 </span>
             </div>
-            <div class="input-group col-sm-3">
+        </div>
+        <div class="col-sm-3 col-lg-2">
+            <div class="input-group">
                 <span class="input-group-btn">
                     <button ng-click="date.incHours(-1)" class="btn btn-default">
                         <span class="glyphicon glyphicon-chevron-left"></span>
@@ -94,7 +105,6 @@
             </div>
         </div>
     </div>
-    <br>
     <div class="row" ng-init="tab.active='fish'">
         <ul class="nav nav-tabs" role="tablist">
             <li ng-class="{active: tab.active=='fish'}" class="text-center col-xs-6 col-sm-3" ng-click="tab.active = 'fish'"><a role="tab">Fish</a></li>
