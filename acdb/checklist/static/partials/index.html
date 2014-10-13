@@ -32,7 +32,7 @@
     </div>
     <div class="row">
         <div class="form-inline">
-            <div class="form-group col-sm-3 col-md-2">
+            <!--div class="form-group col-sm-3 col-md-2">
                 <div class="btn-group btn-group-justified">
                     <div class="btn-group">
                         <button ng-click="tab.active='fish'" ng-class="{active: tab.active=='fish'}" class="btn btn-default btn-add">Fish</button>
@@ -41,8 +41,8 @@
                         <button ng-click="tab.active='bugs'" ng-class="{active: tab.active=='bugs'}" class="btn btn-default btn-add">Bugs</button>
                     </div>
                 </div>
-            </div>
-            <div class="form-group col-sm-3 col-md-2">
+            </div-->
+            <div class="form-group col-sm-3">
                 <button ng-click="showTimeControls = !showTimeControls" class="btn btn-block btn-default">{{date.get() | date: 'MMMM dd, ha'}}</button>
             </div>
             <div class="form-group col-sm-4 col-md-3">
@@ -52,12 +52,30 @@
                 </div>
             </div>
         </div>
+        <div class="form-inline col-xs-12 col-sm-10" ng-show="showTimeControls">
+            <div class="input-group col-sm-4">
+                <span class="input-group-btn"><button ng-click="date.incMonth(-1)" class="btn btn-default">&lt;</button></span>
+                <input type="text" class="form-control text-center" value="{{date.get() | date: 'MMMM'}}" readonly>
+                <span class="input-group-btn"><button ng-click="date.incMonth(1)" class="btn btn-default">&gt;</button></span>
+            </div>
+            <div class="input-group col-sm-3">
+                <span class="input-group-btn"><button ng-click="date.incDate(-1)" class="btn btn-default">&lt;</button></span>
+                <input type="text" class="form-control text-center" value="{{date.get() | date: 'dd'}}" readonly>
+                <span class="input-group-btn"><button ng-click="date.incDate(1)" class="btn btn-default">&gt;</button></span>
+            </div>
+            <div class="input-group col-sm-3">
+                <span class="input-group-btn"><button ng-click="date.incHours(-1)" class="btn btn-default">&lt;</button></span>
+                <input type="text" class="form-control text-center" value="{{date.get() | date: 'ha'}}" readonly>
+                <span class="input-group-btn"><button ng-click="date.incHours(1)" class="btn btn-default">&gt;</button></span>
+            </div>
+        </div>
     </div>
+    <br>
     <div class="row" ng-init="tab.active='fish'">
-        <!--ul class="nav nav-tabs" role="tablist">
-            <li ng-class="{active: tab.active=='fish'}" ng-click="tab.active = 'fish'"><a role="tab">Fish</a></li>
-            <li ng-class="{active: tab.active=='bugs'}" ng-click="tab.active = 'bugs'"><a role="tab">Bugs</a></li>
-        </ul-->
+        <ul class="nav nav-tabs" role="tablist">
+            <li ng-class="{active: tab.active=='fish'}" class="text-center col-xs-6 col-sm-3" ng-click="tab.active = 'fish'"><a role="tab">Fish</a></li>
+            <li ng-class="{active: tab.active=='bugs'}" class="text-center col-xs-6 col-sm-3" ng-click="tab.active = 'bugs'"><a role="tab">Bugs</a></li>
+        </ul>
         <div class="tab-content">
             <table class="table table-striped">
                 <thead>
@@ -67,30 +85,21 @@
                         <th ng-click="sort.set('slot')">#</th>
                         <th ng-click="sort.set('name')">Name</th>
                         <th ng-click="sort.set(['location', 'name'])">Location</th>
-                        <th ng-click="sort.set('season')">Season</th>
-                        <th ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow</th>
-                        <th ng-click="sort.set('value')">Value</th>
+                        <th class="hidden-xs" ng-click="sort.set('season')">Season</th>
+                        <th class="hidden-xs" ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow</th>
+                        <th class="hidden-xs" ng-click="sort.set('value')">Value</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="fish in species.fish | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='fish'" ng-class="{success: fish.caught}">
-                        <td><input type="checkbox" ng-model="fish.caught"></td>
-                        <td>{{fish.isAvailable()}}</td>
-                        <td>{{fish.slot}}</td>
-                        <td>{{fish.name}}</td>
-                        <td>{{fish.habitat}}</td>
-                        <td>{{fish.season}}</td>
-                        <td>{{fish.shadow}}</td>
-                        <td>{{fish.value}}</td>
-                    </tr>
-                    <tr ng-repeat="bug in species.bugs | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-show="tab.active=='bugs'" ng-class="{success: bug.caught}">
-                        <td><input type="checkbox" ng-model="bug.caught"></td>
-                        <td>{{bug.isAvailable()}}</td>
-                        <td>{{bug.slot}}</td>
-                        <td>{{bug.name}}</td>
-                        <td>{{bug.habitat}}</td>
-                        <td>{{bug.season}}</td>
-                        <td>{{bug.value}}</td>
+                    <tr ng-repeat="animal in (tab.active=='fish' ? species.fish : species.bugs) | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{success: animal.caught}">
+                        <td><input type="checkbox" ng-model="animal.caught"></td>
+                        <td>{{animal.isAvailable()}}</td>
+                        <td>{{animal.slot}}</td>
+                        <td>{{animal.name}}</td>
+                        <td>{{animal.habitat}}</td>
+                        <td class="hidden-xs" >{{animal.season}}</td>
+                        <td class="hidden-xs" ng-show="tab.active=='fish'">{{animal.shadow}}</td>
+                        <td class="hidden-xs" >{{animal.value}}</td>
                     </tr>
                 </tbody>
                 <tfoot>
