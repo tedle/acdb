@@ -1,6 +1,15 @@
 input[readonly] {
     cursor: default !important;
 }
+.nav-tabs > li {
+    cursor: pointer;
+}
+th {
+    cursor: pointer;
+}
+th:hover {
+    background: #eee;
+}
 /* Navbar padding */
 /*body {
     padding-top: 80px;

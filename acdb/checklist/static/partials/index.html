@@ -114,11 +114,11 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
+                        <th ng-click="sort.set(['caught', 'slot'])"><span class="glyphicon glyphicon-ok"></span></th>
                         <th ng-click="sort.set('slot')">#</th>
                         <th ng-click="sort.set('name')">Name</th>
                         <th ng-click="sort.set(['-seasonalData().code', 'seasonalData().next.month', 'caught', 'slot'])">Season</th>
-                        <th ng-click="sort.set(['location', 'name'])">Location</th>
+                        <th ng-click="sort.set(['habitat', 'name'])">Location</th>
                         <th class="hidden-xs" ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow</th>
                         <th class="hidden-xs" ng-click="sort.set('value')">Value</th>
                     </tr>
