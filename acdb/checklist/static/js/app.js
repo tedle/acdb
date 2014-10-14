@@ -14,10 +14,6 @@ function($routeProvider, $locationProvider) {
 
 acdbApp.controller('ChecklistController', ['$scope', 'date', 'encyclopedia', 'saveData', 
 function($scope, date, encyclopedia, saveData) {
-    $scope.test = {
-        words: "hey hio hey :)",
-    };
-
     $scope.date = date;
 
     $scope.sort = {
@@ -35,13 +31,22 @@ function($scope, date, encyclopedia, saveData) {
         }
     };
 
+    // Insert species into scope
     $scope.species = {
         fish: encyclopedia.fish(),
         bugs: encyclopedia.bugs()
     };
+
+    // Load save data after API requests complete
     encyclopedia.loaded().then(function() {
         saveData.load();
     });
+
+    // Watch checkboxes for auto-save feature
+    $scope.$watch('species', function() {
+        saveData.save();
+    }, true);
+
     $scope.saveData = saveData;
 }]);
 
