@@ -45,6 +45,17 @@ function($scope, date, encyclopedia, saveData) {
     $scope.saveData = saveData;
 }]);
 
+acdbApp.directive('autoSelect', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            element.on('click', function () {
+                this.select();
+            });
+        }
+    };
+});
+
 acdbApp.service('acdbApi', ['$http', 'Species',
 function($http, Species) {
     function get(url) {
@@ -181,11 +192,12 @@ function($location, date, cookie, encyclopedia) {
     }
 
     this.setUrl = function(saveStr) {
-        var str = $location.protocol() + '//' + $location.host();
+        var str = $location.protocol() + '://' + $location.host();
         if ($location.port() != 80) {
             str += ':' + $location.port();
         }
-        str += '/import/' + saveStr;
+        str += '/import/' + saveStr + '/';
+        url = str;
     }
 
     this.save = function() {
