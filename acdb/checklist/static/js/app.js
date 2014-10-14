@@ -39,6 +39,9 @@ function($scope, date, encyclopedia, saveData) {
         fish: encyclopedia.fish(),
         bugs: encyclopedia.bugs()
     };
+    encyclopedia.loaded().then(function() {
+        saveData.load();
+    });
     $scope.saveData = saveData;
 }]);
 
@@ -123,12 +126,14 @@ function($interval) {
         hoursOffset += num;
     }
     this.offsetAsHours = function() {
-        return 1000;
+        var now = new Date();
+        var then = this.get();
+        return (then - now) / 1000 / 60 / 60;
     }
 }]);
 
-acdbApp.service('encyclopedia', ['acdbApi', 'Species',
-function(acdbApi, Species) {
+acdbApp.service('encyclopedia', ['$q', 'acdbApi', 'Species',
+function($q, acdbApi, Species) {
     // Need local vars with getters and setters because promises cant see 'this'
     var fish = new Array();
     var bugs = new Array();
@@ -140,21 +145,26 @@ function(acdbApi, Species) {
         return bugs;
     }
 
+    this.loaded = function() {
+        return apiDeferred;
+    }
+
     // Need to update arrays manually to keep obj reference
-    acdbApi.fish().then(function(data){
-        data.forEach(function(f) {
+    var apiDeferred = $q.all({
+        fish: acdbApi.fish(),
+        bugs: acdbApi.bugs()
+    }).then(function(results) {
+        results.fish.forEach(function(f) {
             fish[f.slot-1] = f;
         });
-    });
-    acdbApi.bugs().then(function(data){
-        data.forEach(function(b) {
+        results.bugs.forEach(function(b) {
             bugs[b.slot-1] = b;
         });
     });
 }]);
 
-acdbApp.service('saveData', ['date', 'cookie', 'encyclopedia',
-function(date, cookie, encyclopedia) {
+acdbApp.service('saveData', ['$location', 'date', 'cookie', 'encyclopedia',
+function($location, date, cookie, encyclopedia) {
     var BASE64_REPLACE_SET = [
         ['/', '_'],
         ['+', '-'],
@@ -164,6 +174,19 @@ function(date, cookie, encyclopedia) {
     var NUM_BUGS = 64;
     // Ensure we can't save before having loaded our data
     var loaded = false;
+    var url = "";
+
+    this.url = function() {
+        return url;
+    }
+
+    this.setUrl = function(saveStr) {
+        var str = $location.protocol() + '//' + $location.host();
+        if ($location.port() != 80) {
+            str += ':' + $location.port();
+        }
+        str += '/import/' + saveStr;
+    }
 
     this.save = function() {
         if (loaded) {
@@ -172,11 +195,13 @@ function(date, cookie, encyclopedia) {
             var hoursOffset = date.offsetAsHours();
             var saveStr = this.encodeSaveStr(fish, bugs, hoursOffset);
             cookie.set('checklist', saveStr, 365);
+            this.setUrl(saveStr);
         }
     }
 
     this.load = function() {
         var saveStr = cookie.get('checklist');
+        this.setUrl(saveStr);
         // First visit
         if (saveStr == "") {
             loaded = true;
