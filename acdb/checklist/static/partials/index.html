@@ -115,23 +115,24 @@
                 <thead>
                     <tr>
                         <th ng-click="sort.set(['caught', 'slot'])">&#x2713;</th>
-                        <th ng-click="sort.set(['-isAvailable()', 'caught', 'slot'])">&#x1F553;</th>
                         <th ng-click="sort.set('slot')">#</th>
                         <th ng-click="sort.set('name')">Name</th>
+                        <th ng-click="sort.set(['-seasonalData().code', 'seasonalData().next.month', 'caught', 'slot'])">Season</th>
                         <th ng-click="sort.set(['location', 'name'])">Location</th>
-                        <th class="hidden-xs" ng-click="sort.set('season')">Season</th>
                         <th class="hidden-xs" ng-click="sort.set('shadow')" ng-show="tab.active=='fish'">Shadow</th>
                         <th class="hidden-xs" ng-click="sort.set('value')">Value</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="animal in (tab.active=='fish' ? species.fish : species.bugs) | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{success: animal.caught}">
+                    <tr ng-repeat="animal in (tab.active=='fish' ? species.fish : species.bugs) | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{success: animal.caught, info: animal.seasonalData().code==2 && !animal.caught}">
                         <td><input type="checkbox" ng-model="animal.caught"></td>
-                        <td>{{animal.isAvailable()}}</td>
                         <td>{{animal.slot}}</td>
                         <td>{{animal.name}}</td>
+                        <td>
+                            <span class="visible-xs">{{animal.seasonalData().str}}</span>
+                            <span class="hidden-xs">{{animal.season}}</span>
+                        </td>
                         <td>{{animal.habitat}}</td>
-                        <td class="hidden-xs" >{{animal.season}}</td>
                         <td class="hidden-xs" ng-show="tab.active=='fish'">{{animal.shadow}}</td>
                         <td class="hidden-xs" >{{animal.value}}</td>
                     </tr>

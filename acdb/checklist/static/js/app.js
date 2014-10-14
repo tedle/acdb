@@ -325,12 +325,38 @@ function($filter, date) {
         this.value = value;
         this.caught = false;
         this.season = prettifySeason(this.schedule);
+
+        this.seasonalCache = {
+            date: date.get(),
+            data: null
+        };
     }
 
-    Species.prototype.isAvailable = function() {
+    Species.prototype.seasonalData = function() {
+        // Check if cached data is up to date
+        var now = date.get();
+        if (this.seasonalCache.date.getHours() == now.getHours() &&
+            this.seasonalCache.date.getDate() == now.getDate() &&
+            this.seasonalCache.date.getMonth() == now.getMonth() &&
+            this.seasonalCache.data != null) {
+            return this.seasonalCache.data;
+        }
+
         var seasonal = false;
         var tempSeasonal = false;
         var hourly = false;
+        // Return data
+        var availability = {
+            // 2=available, 1=right month wrong time, 0=wrong month
+            code: 0,
+            // Time until in season
+            next: {
+                month: 12,
+                hour: 24
+            },
+            // Short availability string
+            str: ""
+        };
         angular.forEach(this.schedule, function(timeslot) {
             // Check month range
             var start = new Date(date.get());
@@ -345,6 +371,15 @@ function($filter, date) {
             } else if ((date.get() >= start || date.get() <= end) &&
                        (timeslot.month.start > timeslot.month.end)) {
                 seasonal = tempSeasonal = true;
+            } else {
+                var next = timeslot.month.start - (date.get().getMonth() + 1);
+                // If next season is next year (ie now=dec, next=feb)
+                if (next < 0) {
+                    next += 12;
+                }
+                if (next < availability.next.month) {
+                    availability.next.month = next;
+                }
             }
             // Check hour range
             var start = new Date(date.get());
@@ -357,6 +392,15 @@ function($filter, date) {
             } else if ((date.get() >= start || date.get() < end) &&
                        (timeslot.hour.start > timeslot.hour.end)) {
                 hourly = true;
+            } else if (tempSeasonal) {
+                var next = timeslot.hour.start - date.get().getHours();
+                // If next hour range is tomorrow (ie now=11pm, next=4am)
+                if (next < 0) {
+                    next += 24;
+                }
+                if (next < availability.next.hour) {
+                    availability.next.hour = next;
+                }
             }
             // Reset for next iteration
             if (tempSeasonal != hourly) {
@@ -364,12 +408,25 @@ function($filter, date) {
             }
         }, this);
         if (tempSeasonal && hourly) {
-            return 2;
+            availability.code = 2;
+            availability.next.month = 0;
+            availability.next.hour = 0;
+            availability.str = "Now";
         } else if (seasonal) {
-            return 1;
+            availability.code = 1;
+            availability.next.month = 0;
+            var tempDate = new Date(date.get());
+            tempDate.setHours(tempDate.getHours() + availability.next.hour);
+            availability.str = angular.lowercase($filter('date')(tempDate, 'ha'));
         } else {
-            return 0;
+            availability.code = 0;
+            var tempDate = new Date(date.get());
+            tempDate.setMonth(tempDate.getMonth() + availability.next.month);
+            availability.str = $filter('date')(tempDate, 'MMM');
         }
+        this.seasonalCache.date = date.get();
+        this.seasonalCache.data = availability;
+        return availability;
     }
 
     function prettifySeason(schedule) {
