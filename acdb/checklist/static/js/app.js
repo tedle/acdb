@@ -17,7 +17,7 @@ acdbApp.controller('ChecklistController', ['$scope', 'date', 'encyclopedia', 'sa
 function($scope, date, encyclopedia, saveData) {
     $scope.error = {
         api: false
-    }
+    };
 
     $scope.date = date;
 
@@ -73,10 +73,10 @@ function($scope, $location, $routeParams, cookie, saveData) {
     $scope.accept = function() {
         cookie.set('checklist', saveStr, 365);
         $scope.index();
-    }
+    };
     $scope.index = function() {
         $location.path('/');
-    }
+    };
 }]);
 
 acdbApp.directive('autoSelect', function () {
@@ -96,12 +96,12 @@ function($http, $q, Species) {
         var promise = $http.get(url).
         then(function(response) {
             response.data.forEach(function(animal, index) {
-                response.data[index] = new Species(animal['slot'], animal['name'],
-                                                   animal['location'], animal['schedule'],
-                                                   animal['value']);
+                response.data[index] = new Species(animal.slot, animal.name,
+                                                   animal.location, animal.schedule,
+                                                   animal.value);
                 // Doesnt seem worth making 2 inherited classes over such a tiny difference...
                 if ('shadow' in animal) {
-                    response.data[index].shadow = animal['shadow'];
+                    response.data[index].shadow = animal.shadow;
                 }
             });
             return response.data;
@@ -113,10 +113,10 @@ function($http, $q, Species) {
 
     this.bugs = function(){
         return get('/api/cf/bug/all');
-    }
+    };
     this.fish = function(){
         return get('api/cf/fish/all');
-    }
+    };
 }]);
 
 acdbApp.service('cookie', [
@@ -124,12 +124,12 @@ function() {
     this.set = function(name, value, days) {
         var expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (days * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + expiryDate.toUTCString();
-        document.cookie = name + "=" + value + "; " + expires;
-    }
+        var expires = 'expires=' + expiryDate.toUTCString();
+        document.cookie = name + '=' + value + '; ' + expires;
+    };
 
     this.get = function(name) {
-        name += "=";
+        name += '=';
         var cookieArray = document.cookie.split(';');
         for (var i = 0; i < cookieArray.length; i++) {
             var c = cookieArray[i];
@@ -140,8 +140,8 @@ function() {
                 return c.substring(name.length, c.length);
             }
         }
-        return "";
-    }
+        return '';
+    };
 }]);
 
 acdbApp.service('date', ['$interval',
@@ -160,45 +160,45 @@ function($interval) {
         date.setDate(date.getDate()+dateOffset);
         date.setHours(date.getHours()+hoursOffset);
         return date;
-    }
+    };
     this.reset = function() {
         monthOffset = 0;
         dateOffset = 0;
         hoursOffset = 0;
         this.get();
-    }
+    };
     this.incMonth = function(num) {
         monthOffset += num;
-    }
+    };
     this.incDate = function(num) {
         dateOffset += num;
-    }
+    };
     this.incHours = function(num) {
         hoursOffset += num;
-    }
+    };
     this.offsetAsHours = function() {
         var now = new Date();
         var then = this.get();
         return (then - now) / 1000 / 60 / 60;
-    }
+    };
 }]);
 
 acdbApp.service('encyclopedia', ['$q', 'acdbApi', 'Species',
 function($q, acdbApi, Species) {
     // Need local vars with getters and setters because promises cant see 'this'
-    var fish = new Array();
-    var bugs = new Array();
+    var fish = [];
+    var bugs = [];
 
     this.fish = function() {
         return fish;
-    }
+    };
     this.bugs = function() {
         return bugs;
-    }
+    };
 
     this.loaded = function() {
         return apiDeferred;
-    }
+    };
 
     // Need to update arrays manually to keep obj reference
     var apiDeferred = $q.all({
@@ -227,11 +227,11 @@ function($location, date, cookie, encyclopedia) {
     var NUM_BUGS = 64;
     // Ensure we can't save before having loaded our data
     var loaded = false;
-    var url = "";
+    var url = '';
 
     this.url = function() {
         return url;
-    }
+    };
 
     this.setUrl = function(saveStr) {
         var str = $location.protocol() + '://' + $location.host();
@@ -240,7 +240,7 @@ function($location, date, cookie, encyclopedia) {
         }
         str += '/import/' + saveStr + '/';
         url = str;
-    }
+    };
 
     this.save = function() {
         if (loaded) {
@@ -251,14 +251,14 @@ function($location, date, cookie, encyclopedia) {
             cookie.set('checklist', saveStr, 365);
             this.setUrl(saveStr);
         }
-    }
+    };
 
     this.load = function() {
         var saveStr = cookie.get('checklist');
         this.setUrl(saveStr);
 
         // First visit
-        if (saveStr == "") {
+        if (saveStr === '') {
             loaded = true;
             return;
         }
@@ -279,7 +279,7 @@ function($location, date, cookie, encyclopedia) {
         date.incHours(data.hours);
 
         loaded = true;
-    }
+    };
 
     this.encodeSaveStr = function(fish, bugs, hoursOffset) {
         var fishCaught = new Array(NUM_FISH);
@@ -300,21 +300,21 @@ function($location, date, cookie, encyclopedia) {
         saveBits = fishCaught.concat(bugsCaught, offsetBits);
 
         // Packing
-        var rawSaveStr = "";
+        var rawSaveStr = '';
         for (var i = 0; i < saveBits.length; i += 8) {
             var byteArray = saveBits.slice(i, i + 8);
             rawSaveStr += String.fromCharCode(packByte(byteArray));
         }
 
         return encodeSafeBase64(rawSaveStr);
-    }
+    };
 
     this.decodeSaveStr = function(saveStr) {
         var fishCaught = new Array(NUM_FISH);
         var bugsCaught = new Array(NUM_BUGS);
         var hoursOffset = 0;
         var rawSaveStr = decodeSafeBase64(saveStr);
-        var saveBits = new Array();
+        var saveBits = [];
 
         angular.forEach(rawSaveStr, function(b) {
             var byteArray = unpackByte(b);
@@ -341,7 +341,7 @@ function($location, date, cookie, encyclopedia) {
             hours: hoursOffset
         };
         return unpackedData;
-    }
+    };
 
     function decodeSafeBase64(baseStr) {
         BASE64_REPLACE_SET.forEach(function(r) {
@@ -421,7 +421,7 @@ function($filter, date) {
         if (this.seasonalCache.date.getHours() == now.getHours() &&
             this.seasonalCache.date.getDate() == now.getDate() &&
             this.seasonalCache.date.getMonth() == now.getMonth() &&
-            this.seasonalCache.data != null) {
+            this.seasonalCache.data !== null) {
             return this.seasonalCache.data;
         }
 
@@ -438,7 +438,7 @@ function($filter, date) {
                 hour: 24
             },
             // Short availability string
-            str: ""
+            str: ''
         };
         angular.forEach(this.schedule, function(timeslot) {
             // Check month range
@@ -455,19 +455,19 @@ function($filter, date) {
                        (timeslot.month.start > timeslot.month.end)) {
                 seasonal = tempSeasonal = true;
             } else {
-                var next = timeslot.month.start - (date.get().getMonth() + 1);
+                var nextMonth = timeslot.month.start - (date.get().getMonth() + 1);
                 // If next season is next year (ie now=dec, next=feb)
-                if (next < 0) {
-                    next += 12;
+                if (nextMonth < 0) {
+                    nextMonth += 12;
                 }
-                if (next < availability.next.month) {
-                    availability.next.month = next;
+                if (nextMonth < availability.next.month) {
+                    availability.next.month = nextMonth;
                 }
             }
             // Check hour range
-            var start = new Date(date.get());
+            start = new Date(date.get());
             start.setHours(timeslot.hour.start);
-            var end = new Date(date.get());
+            end = new Date(date.get());
             end.setHours(timeslot.hour.end);
 
             if (date.get() >= start && date.get() < end) {
@@ -476,13 +476,13 @@ function($filter, date) {
                        (timeslot.hour.start > timeslot.hour.end)) {
                 hourly = true;
             } else if (tempSeasonal) {
-                var next = timeslot.hour.start - date.get().getHours();
+                var nextHour = timeslot.hour.start - date.get().getHours();
                 // If next hour range is tomorrow (ie now=11pm, next=4am)
-                if (next < 0) {
-                    next += 24;
+                if (nextHour < 0) {
+                    nextHour += 24;
                 }
-                if (next < availability.next.hour) {
-                    availability.next.hour = next;
+                if (nextHour < availability.next.hour) {
+                    availability.next.hour = nextHour;
                 }
             }
             // Reset for next iteration
@@ -498,25 +498,25 @@ function($filter, date) {
         } else if (seasonal) {
             availability.code = 1;
             availability.next.month = 0;
-            var tempDate = new Date(date.get());
-            tempDate.setHours(tempDate.getHours() + availability.next.hour);
-            availability.str = angular.lowercase($filter('date')(tempDate, 'ha'));
+            var tempHour = new Date(date.get());
+            tempHour.setHours(tempHour.getHours() + availability.next.hour);
+            availability.str = angular.lowercase($filter('date')(tempHour, 'ha'));
         } else {
             availability.code = 0;
-            var tempDate = new Date(date.get());
-            tempDate.setMonth(tempDate.getMonth() + availability.next.month);
-            availability.str = $filter('date')(tempDate, 'MMM');
+            var tempMonth = new Date(date.get());
+            tempMonth.setMonth(tempMonth.getMonth() + availability.next.month);
+            availability.str = $filter('date')(tempMonth, 'MMM');
         }
         this.seasonalCache.date = date.get();
         this.seasonalCache.data = availability;
         return availability;
-    }
+    };
 
     function prettifySeason(schedule) {
         var pretty = "";
         angular.forEach(schedule, function(timeslot, index) {
             if (index > 0) {
-                pretty += ", "
+                pretty += ", ";
             }
             season = new Date();
             // All Year
@@ -528,12 +528,12 @@ function($filter, date) {
                 // July 15-31
                 if (timeslot.day.start != 1 || timeslot.day.end != 31) {
                     season.setDate(timeslot.day.start);
-                    pretty += $filter('date')(season,"MMM d-");
+                    pretty += $filter('date')(season,'MMM d-');
                     season.setDate(timeslot.day.end);
-                    pretty += $filter('date')(season,"d ");
+                    pretty += $filter('date')(season,'d ');
                 // July
                 } else {
-                    pretty += $filter('date')(season,"MMM ");
+                    pretty += $filter('date')(season,'MMM ');
                 }
             // July-Sept
             } else {
@@ -541,30 +541,30 @@ function($filter, date) {
                 // July 15-Sept
                 if (timeslot.day.start != 1) {
                     season.setDate(timeslot.day.start);
-                    pretty += $filter('date')(season,"MMM d-");
+                    pretty += $filter('date')(season,'MMM d-');
                 // July-Sept
                 } else {
-                    pretty += $filter('date')(season,"MMM-");
+                    pretty += $filter('date')(season,'MMM-');
                 }
                 season.setMonth(timeslot.month.end-1);
                 // July-Sept 15
                 if (timeslot.day.end != 31) {
                     season.setDate(timeslot.day.end);
-                    pretty += $filter('date')(season,"MMM d ");
+                    pretty += $filter('date')(season,'MMM d ');
                 // July-Sept
                 } else {
-                    pretty += $filter('date')(season,"MMM ");
+                    pretty += $filter('date')(season,'MMM ');
                 }
             }
             // All day
-            if (timeslot.hour.start == 0 && timeslot.hour.end == 24) {
+            if (timeslot.hour.start === 0 && timeslot.hour.end === 24) {
                 pretty += "(All day)";
             // 4pm-9pm
             } else {
                 season.setHours(timeslot.hour.start);
-                pretty += angular.lowercase($filter('date')(season,"(ha-"));
+                pretty += angular.lowercase($filter('date')(season,'(ha-'));
                 season.setHours(timeslot.hour.end);
-                pretty += angular.lowercase($filter('date')(season,"ha)"));
+                pretty += angular.lowercase($filter('date')(season,'ha)'));
             }
         });
         return pretty;
