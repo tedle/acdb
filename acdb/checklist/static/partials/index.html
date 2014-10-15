@@ -89,7 +89,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="animal in (tab.active=='fish' ? species.fish : species.bugs) | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{success: animal.caught, info: animal.seasonalData().code==2 && !animal.caught}">
+                    <tr ng-repeat="animal in (tab.active=='fish' ? species.fish : species.bugs) | orderBy:sort.order:sort.reverse | filter: searchFilter" ng-class="{success: animal.caught, info: animal.seasonalData().code==2 && !animal.caught}" ng-hide="error.api">
                         <td><input type="checkbox" ng-model="animal.caught"></td>
                         <td>{{animal.slot}}</td>
                         <td>{{animal.name}}</td>
@@ -103,6 +103,9 @@
                     </tr>
                 </tbody>
                 <tfoot>
+                    <tr ng-show="error.api">
+                        <td colspan="100" class="danger">Failed to load encyclopedia from database, try refreshing</td>
+                    </tr>
                 </tfoot>
             </table>
         </div>

@@ -15,6 +15,10 @@ function($routeProvider, $locationProvider) {
 
 acdbApp.controller('ChecklistController', ['$scope', 'date', 'encyclopedia', 'saveData', 
 function($scope, date, encyclopedia, saveData) {
+    $scope.error = {
+        api: false
+    }
+
     $scope.date = date;
 
     $scope.sort = {
@@ -41,6 +45,8 @@ function($scope, date, encyclopedia, saveData) {
     // Load save data after API requests complete
     encyclopedia.loaded().then(function() {
         saveData.load();
+    }, function(error) {
+        $scope.error.api = true;
     });
 
     // Watch checkboxes for auto-save feature
@@ -84,8 +90,8 @@ acdbApp.directive('autoSelect', function () {
     };
 });
 
-acdbApp.service('acdbApi', ['$http', 'Species',
-function($http, Species) {
+acdbApp.service('acdbApi', ['$http', '$q', 'Species',
+function($http, $q, Species) {
     function get(url) {
         var promise = $http.get(url).
         then(function(response) {
@@ -100,7 +106,7 @@ function($http, Species) {
             });
             return response.data;
         }, function(error) {
-            return "Failed to grab API data";
+            return $q.reject(error);
         });
         return promise;
     }
@@ -205,6 +211,8 @@ function($q, acdbApi, Species) {
         results.bugs.forEach(function(b) {
             bugs[b.slot-1] = b;
         });
+    }, function(error) {
+        return $q.reject(error);
     });
 }]);
 
