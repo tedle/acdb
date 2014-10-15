@@ -106,10 +106,10 @@ function($http, Species) {
     }
 
     this.bugs = function(){
-        return get('/api/bug/all');
+        return get('/api/cf/bug/all');
     }
     this.fish = function(){
-        return get('api/fish/all');
+        return get('api/cf/fish/all');
     }
 }]);
 
