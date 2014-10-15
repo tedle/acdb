@@ -1,4 +1,5 @@
 .env
+.tern-project
 *.swp
 *.pyc
 TODO
