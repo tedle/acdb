@@ -6,26 +6,13 @@ input[readonly] {
 }
 th {
     cursor: pointer;
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
 }
 th:hover {
-    background: #eee;
+    color: #2196f3;
 }
-/* Navbar padding */
-/*body {
-    padding-top: 80px;
-}*/
-/* tr {
-    background: #eee;
+th.active {
+    color: #2196f3;
 }
-
-.caught {
-    background: #efe;
-}
-
-.available {
-    background: #eef;
-}*/
-/*.table tbody tr > td.success {
-  background-color: #dff0d8 !important;
-}*/
-
