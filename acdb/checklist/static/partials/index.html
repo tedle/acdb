@@ -46,55 +46,68 @@
         </div>
         <div class="form-group col-sm-4 col-md-3">
             <div class="input-group">
-                <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-                <input type="text" ng-model="searchFilter.name" class="form-control" placeholder="Filter species">
+                <div class="input-group-addon"><span class="fa fa-search"></span></div>
+                <input type="text" ng-model="searchFilter.name" class="form-control" placeholder="Filter species" autocapitalize="off" autocorrect="off" autocomplete="off">
             </div>
         </div>
     </div>
-    <div class="row well form-group" ng-show="showTimeControls">
-        <div class="col-sm-4 col-md-3">
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button ng-click="date.incMonth(-1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                </span>
-                <input type="text" class="form-control text-center" value="{{date.get() | date: 'MMMM'}}" readonly>
-                <span class="input-group-btn">
-                    <button ng-click="date.incMonth(1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                </span>
-            </div>
-        </div>
-        <div class="col-sm-3 col-md-2">
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button ng-click="date.incDate(-1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                </span>
-                <input type="text" class="form-control text-center" value="{{date.get() | date: 'dd'}}" readonly>
-                <span class="input-group-btn">
-                    <button ng-click="date.incDate(1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                </span>
-            </div>
-        </div>
-        <div class="col-sm-3 col-lg-2">
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button ng-click="date.incHours(-1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                </span>
-                <input type="text" class="form-control text-center" value="{{date.get() | date: 'ha'}}" readonly>
-                <span class="input-group-btn">
-                    <button ng-click="date.incHours(1)" class="btn btn-default">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                </span>
+    <div class="row form-group" ng-show="showTimeControls">
+        <div class="panel panel-default">
+            <div class="panel-heading">Date settings</div>
+            <div class="panel-body">
+                <div class="col-sm-4 col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button ng-click="date.incMonth(-1)" class="btn btn-default">
+                                <span class="fa fa-chevron-left"></span>
+                            </button>
+                        </span>
+                        <input type="text" class="form-control text-center" value="{{date.get() | date: 'MMMM'}}" readonly>
+                        <span class="input-group-btn">
+                            <button ng-click="date.incMonth(1)" class="btn btn-default">
+                                <span class="fa fa-chevron-right"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button ng-click="date.incDate(-1)" class="btn btn-default">
+                                <span class="fa fa-chevron-left"></span>
+                            </button>
+                        </span>
+                        <input type="text" class="form-control text-center" value="{{date.get() | date: 'dd'}}" readonly>
+                        <span class="input-group-btn">
+                            <button ng-click="date.incDate(1)" class="btn btn-default">
+                                <span class="fa fa-chevron-right"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-lg-2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button ng-click="date.incHours(-1)" class="btn btn-default">
+                                <span class="fa fa-chevron-left"></span>
+                            </button>
+                        </span>
+                        <input type="text" class="form-control text-center" value="{{date.get() | date: 'ha'}}" readonly>
+                        <span class="input-group-btn">
+                            <button ng-click="date.incHours(1)" class="btn btn-default">
+                                <span class="fa fa-chevron-right"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group btn-block">
+                        <button ng-click="date.reset()" class="btn btn-block btn-danger">
+                            Reset <span class="fa fa-remove"></span>
+                        </button>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -107,7 +120,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th ng-click="sort.set(['caught', 'slot'])"><span class="glyphicon glyphicon-ok"></span></th>
+                        <th ng-click="sort.set(['caught', 'slot'])"><span class="fa fa-check"></span></th>
                         <th ng-click="sort.set('slot')">#</th>
                         <th ng-click="sort.set('name')">Name</th>
                         <th ng-click="sort.set(['-seasonalData().code', 'seasonalData().next.month', 'caught', 'slot'])">Season</th>
@@ -136,10 +149,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-sm-6">
-            <div class="input-group">
-                <div class="input-group-addon">Export</div>
-                <input type="text" value="{{saveData.url()}}" class="form-control" placeholder="Save data" auto-select>
+        <div class="form-group col-sm-9 col-md-7 col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Export save data</div>
+                <div class="panel-body">
+                    <input type="text" value="{{saveData.url()}}" class="form-control" placeholder="Save data" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" auto-select>
+                </div>
             </div>
         </div>
     </div>
