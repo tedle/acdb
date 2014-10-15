@@ -6,6 +6,7 @@ acdbApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
     $routeProvider.
     when('/', { controller: 'ChecklistController', templateUrl: 'static/partials/index.html'}).
+    when('/import/:savedata/', { controller: 'ImportController', templateUrl: 'static/partials/import.html'}).
     otherwise({ redirectTo: '/'});
 
     // Removes /#/ from URL
@@ -48,6 +49,25 @@ function($scope, date, encyclopedia, saveData) {
     }, true);
 
     $scope.saveData = saveData;
+}]);
+
+acdbApp.controller('ImportController', ['$scope', '$location', '$routeParams', 'cookie', 'saveData', 
+function($scope, $location, $routeParams, cookie, saveData) {
+    var saveStr = $routeParams.savedata;
+    try {
+        saveData.decodeSaveStr(saveStr);
+        $scope.saveStr = saveStr;
+    } catch (err) {
+        $scope.corrupt = true;
+    }
+
+    $scope.accept = function() {
+        cookie.set('checklist', saveStr, 365);
+        $scope.index();
+    }
+    $scope.index = function() {
+        $location.path('/');
+    }
 }]);
 
 acdbApp.directive('autoSelect', function () {
@@ -219,12 +239,20 @@ function($location, date, cookie, encyclopedia) {
     this.load = function() {
         var saveStr = cookie.get('checklist');
         this.setUrl(saveStr);
+
         // First visit
         if (saveStr == "") {
             loaded = true;
             return;
         }
+
         data = this.decodeSaveStr(saveStr);
+
+        if (encyclopedia.fish().length != data.fish.length ||
+            encyclopedia.bugs().length != data.bugs.length) {
+            throw "[LoadData]: Unexpected number of species";
+        }
+
         encyclopedia.fish().forEach(function(fish) {
             fish.caught = data.fish[fish.slot-1];
         });
@@ -263,35 +291,29 @@ function($location, date, cookie, encyclopedia) {
     }
 
     this.decodeSaveStr = function(saveStr) {
-        var fish = encyclopedia.fish();
-        var bugs = encyclopedia.bugs();
         var fishCaught = new Array(NUM_FISH);
         var bugsCaught = new Array(NUM_BUGS);
         var hoursOffset = 0;
         var rawSaveStr = decodeSafeBase64(saveStr);
         var saveBits = new Array();
 
-        if (fish.length != fishCaught.length || bugs.length != bugsCaught.length) {
-            throw "[LoadData]: Unexpected number of species";
-        }
-
         angular.forEach(rawSaveStr, function(b) {
             var byteArray = unpackByte(b);
             saveBits = saveBits.concat(byteArray);
         });
 
-        if (saveBits.length != fish.length + bugs.length + 32) {
+        if (saveBits.length != NUM_FISH + NUM_BUGS + 32) {
             throw "[LoadData]: Corrupted save data";
         }
 
         // Repackage savedata
-        saveBits.slice(0, fish.length).forEach(function(f, i) {
+        saveBits.slice(0, NUM_FISH).forEach(function(f, i) {
             fishCaught[i] = Boolean(f);
         });
-        saveBits.slice(fish.length, fish.length + bugs.length).forEach(function(b, i) {
+        saveBits.slice(NUM_FISH, NUM_FISH + NUM_BUGS).forEach(function(b, i) {
             bugsCaught[i] = Boolean(b);
         });
-        unpackedHours = saveBits.slice(fish.length + bugs.length);
+        unpackedHours = saveBits.slice(NUM_FISH + NUM_BUGS);
         hoursOffset = packInt(unpackedHours);
 
         var unpackedData = {

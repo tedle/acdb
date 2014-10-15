@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="jumbotron">
+                <h1>Import Save Data</h1>
+                <div ng-hide="corrupt">
+                    <p>Do you want to import this save token?</p>
+                    <pre>{{saveStr}}</pre>
+                    <br>
+                    <div class="form-group">
+                        <button ng-click="accept()" class="btn btn-lg btn-primary">Yeah!</button>
+                        <button ng-click="index()" class="btn btn-lg btn-default">No way!</button>
+                    </div>
+                </div>
+                <div ng-show="corrupt">
+                    <div class="alert alert-danger">
+                        <p>Save data is either corrupted or poorly formatted</p>
+                    </div>
+                    <div class="form-group">
+                        <button ng-click="index()" class="btn btn-lg btn-default">Take me home</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
