@@ -47,6 +47,9 @@ function($scope, date, encyclopedia, saveData) {
     $scope.$watch('species', function() {
         saveData.save();
     }, true);
+    $scope.$watch('date.offsetAsHours()', function() {
+        saveData.save();
+    }, true);
 
     $scope.saveData = saveData;
 }]);
@@ -151,6 +154,12 @@ function($interval) {
         date.setDate(date.getDate()+dateOffset);
         date.setHours(date.getHours()+hoursOffset);
         return date;
+    }
+    this.reset = function() {
+        monthOffset = 0;
+        dateOffset = 0;
+        hoursOffset = 0;
+        this.get();
     }
     this.incMonth = function(num) {
         monthOffset += num;
@@ -259,6 +268,8 @@ function($location, date, cookie, encyclopedia) {
         encyclopedia.bugs().forEach(function(bug) {
             bug.caught = data.bugs[bug.slot-1];
         });
+        date.incHours(data.hours);
+
         loaded = true;
     }
 
