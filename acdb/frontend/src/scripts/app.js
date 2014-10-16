@@ -5,8 +5,8 @@ var acdbApp = angular.module('acdbApp', [
 acdbApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
     $routeProvider.
-    when('/', { controller: 'ChecklistController', templateUrl: 'static/partials/checklist.html'}).
-    when('/import/:savedata/', { controller: 'ImportController', templateUrl: 'static/partials/import.html'}).
+    when('/', { controller: 'ChecklistController', templateUrl: 'templates/checklist.html'}).
+    when('/import/:savedata/', { controller: 'ImportController', templateUrl: 'templates/import.html'}).
     otherwise({ redirectTo: '/'});
 
     // Removes /#/ from URL
