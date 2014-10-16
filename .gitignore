@@ -1,5 +1,6 @@
 .env
 .tern-project
+node_modules/
 *.swp
 *.pyc
 TODO
