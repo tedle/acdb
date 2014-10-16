@@ -218,6 +218,7 @@ function($q, acdbApi, Species) {
 
 acdbApp.service('saveData', ['$location', 'date', 'cookie', 'encyclopedia',
 function($location, date, cookie, encyclopedia) {
+    var VERSION = 1;
     var BASE64_REPLACE_SET = [
         ['/', '_'],
         ['+', '-'],
@@ -296,11 +297,12 @@ function($location, date, cookie, encyclopedia) {
         bugs.forEach(function(b) {
             bugsCaught[b.slot-1] = Boolean(b.caught);
         });
-        offsetBits = unpackInt(hoursOffset);
+        offsetBits = packInt(hoursOffset);
         saveBits = fishCaught.concat(bugsCaught, offsetBits);
 
         // Packing
         var rawSaveStr = '';
+        rawSaveStr += String.fromCharCode(VERSION);
         for (var i = 0; i < saveBits.length; i += 8) {
             var byteArray = saveBits.slice(i, i + 8);
             rawSaveStr += String.fromCharCode(packByte(byteArray));
@@ -310,30 +312,42 @@ function($location, date, cookie, encyclopedia) {
     };
 
     this.decodeSaveStr = function(saveStr) {
+        var version = 0;
         var fishCaught = new Array(NUM_FISH);
         var bugsCaught = new Array(NUM_BUGS);
         var hoursOffset = 0;
         var rawSaveStr = decodeSafeBase64(saveStr);
         var saveBits = [];
+        var saveOffset = 0;
 
         angular.forEach(rawSaveStr, function(b) {
             var byteArray = unpackByte(b);
             saveBits = saveBits.concat(byteArray);
         });
 
-        if (saveBits.length != NUM_FISH + NUM_BUGS + 32) {
+        if (saveBits.length != 8 + NUM_FISH + NUM_BUGS + 32) {
             throw "[LoadData]: Corrupted save data";
         }
 
         // Repackage savedata
-        saveBits.slice(0, NUM_FISH).forEach(function(f, i) {
+        version = packByte(saveBits.slice(saveOffset, saveOffset + 8));
+        saveOffset += 8;
+        if (version != VERSION) {
+            throw "[LoadData]: Outdated save data";
+        }
+
+        saveBits.slice(saveOffset, saveOffset + NUM_FISH).forEach(function(f, i) {
             fishCaught[i] = Boolean(f);
         });
-        saveBits.slice(NUM_FISH, NUM_FISH + NUM_BUGS).forEach(function(b, i) {
+        saveOffset += NUM_FISH;
+
+        saveBits.slice(saveOffset, saveOffset + NUM_BUGS).forEach(function(b, i) {
             bugsCaught[i] = Boolean(b);
         });
-        unpackedHours = saveBits.slice(NUM_FISH + NUM_BUGS);
-        hoursOffset = packInt(unpackedHours);
+        saveOffset += NUM_BUGS;
+
+        var packedHours = saveBits.slice(saveOffset);
+        hoursOffset = unpackInt(packedHours);
 
         var unpackedData = {
             fish: fishCaught,
@@ -380,19 +394,19 @@ function($location, date, cookie, encyclopedia) {
 
     function packInt(unpackedInt) {
         // | 0 to force int
-        var packedInt = 0 | 0;
+        unpackedInt |= 0;
+        var packedInt = new Array(32);
         for(var i = 0; i < 32; i++) {
-            packedInt |= unpackedInt[i] << 31-i;
+            packedInt[i] = Boolean((unpackedInt >> 31-i) & 1);
         }
         return packedInt;
     }
 
     function unpackInt(packedInt) {
         // | 0 to force int
-        packedInt |= 0;
-        var unpackedInt = new Array(32);
+        var unpackedInt = 0 | 0;
         for(var i = 0; i < 32; i++) {
-            unpackedInt[i] = Boolean((packedInt >> 31-i) & 1);
+            unpackedInt |= packedInt[i] << 31-i;
         }
         return unpackedInt;
     }
