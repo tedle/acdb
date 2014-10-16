@@ -254,12 +254,14 @@ function($location, date, cookie, encyclopedia) {
     };
 
     this.load = function() {
+        // Unconditionally set this to true, because I dont wanna code
+        // fallbacks for corrupted data, so we just overwrite it instead
+        loaded = true;
+
         var saveStr = cookie.get('checklist');
         this.setUrl(saveStr);
-
         // First visit
         if (saveStr === '') {
-            loaded = true;
             return;
         }
 
@@ -277,8 +279,6 @@ function($location, date, cookie, encyclopedia) {
             bug.caught = data.bugs[bug.slot-1];
         });
         date.incHours(data.hours);
-
-        loaded = true;
     };
 
     this.encodeSaveStr = function(fish, bugs, hoursOffset) {
