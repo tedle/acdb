@@ -56,7 +56,7 @@ module.exports = function(grunt) {
                     '<%= dir.src %>styles/**.css',
                     '<%= dir.src %>templates/**.html'
                 ],
-                tasks: ['concat', 'ngtemplates', 'cssmin']
+                tasks: ['build']
             }
         },
         uglify: {
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['concat', 'ngtemplates', 'uglify', 'cssmin']);
-    grunt.registerTask('debug', ['concat', 'ngtemplates', 'cssmin']);
+    grunt.registerTask('default', ['build', 'uglify']);
+    grunt.registerTask('build', ['concat', 'ngtemplates', 'cssmin']);
     grunt.registerTask('runserver', ['bgShell', 'watch']);
 };
