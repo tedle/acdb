@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/tedle/acdb.git"
+    "url": "https://github.com/tedle/acdb"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
