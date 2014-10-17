@@ -1,6 +1,6 @@
 # Tool stuff
-.env
 build/
+env
 node_modules/
 
 # Personal stuff
