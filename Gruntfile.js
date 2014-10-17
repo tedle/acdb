@@ -14,6 +14,10 @@ module.exports = function(grunt) {
             },
             django: {
                 cmd: 'python <%= dir.base %>manage.py runserver'
+            },
+            migrate: {
+                bg: false,
+                cmd: 'python <%= dir.base %>manage.py migrate'
             }
         },
         concat: {
@@ -25,6 +29,13 @@ module.exports = function(grunt) {
                 },
                 src: ['<%= dir.src %>app/app.js', '<%= dir.src %>app/**/*.js'],
                 dest: '<%= dir.build %><%= pkg.name %>.js'
+            }
+        },
+        copy: {
+            migrate: {
+                files: {
+                    '<%= dir.base %>accf.db': '<%= dir.base %>accf.master.db'
+                }
             }
         },
         cssmin: {
@@ -80,11 +91,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-bg-shell');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['build', 'uglify']);
     grunt.registerTask('build', ['concat', 'ngtemplates', 'cssmin']);
-    grunt.registerTask('runserver', ['bgShell', 'watch']);
+    grunt.registerTask('runserver', ['bgShell:django', 'watch']);
+    grunt.registerTask('setup', ['copy:migrate', 'bgShell:migrate']);
 };
