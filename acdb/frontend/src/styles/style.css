@@ -13,3 +13,9 @@ th {
 th.active, th:hover {
     color: #2196f3;
 }
+footer {
+    margin-bottom: 20px;
+}
+footer p {
+    margin: 0;
+}
