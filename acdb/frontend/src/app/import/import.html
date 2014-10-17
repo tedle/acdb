@@ -3,6 +3,7 @@
         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
             <div class="jumbotron">
                 <h1>Import Save Data</h1>
+                <!-- If save data is validated, show form allowing to either import or reject save -->
                 <div ng-hide="corrupt">
                     <p>Do you want to import this save token?</p>
                     <pre>{{saveStr}}</pre>
@@ -12,6 +13,7 @@
                         <button ng-click="index()" class="btn btn-lg btn-default">No way!</button>
                     </div>
                 </div>
+                <!-- If save data is bad, show alert and button for redirecting to index -->
                 <div ng-show="corrupt">
                     <div class="alert alert-danger">
                         <p>Save data is either corrupted or poorly formatted</p>

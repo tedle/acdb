@@ -1,3 +1,6 @@
+// --- config.js ---------------------------------------------------------------
+// Sets up module configuration and URL routing for anything not covered backend
+
 acdbApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
     $routeProvider.

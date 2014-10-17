@@ -1,13 +1,18 @@
+// --- api.js ------------------------------------------------------------------
+// Service for accessing backend API and retrieving species data
+
 acdbApp.service('acdbApi', ['$http', '$q', 'Species',
 function($http, $q, Species) {
     function get(url) {
         var promise = $http.get(url).
         then(function(response) {
+            // Iterate thru API data and create Species object for each.
+            // Should probably be doing this in fish() and bugs(), but
+            // keeps things a bit more DRY until database is fleshed out
             response.data.forEach(function(animal, index) {
                 response.data[index] = new Species(animal.slot, animal.name,
                                                    animal.location, animal.schedule,
                                                    animal.value);
-                // Doesnt seem worth making 2 inherited classes over such a tiny difference...
                 if ('shadow' in animal) {
                     response.data[index].shadow = animal.shadow;
                 }

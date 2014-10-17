@@ -1,4 +1,5 @@
 <div class="container">
+    <!-- Expand date settings, filter for certain species -->
     <div class="row">
         <div class="form-group col-sm-3">
             <button ng-click="showTimeControls = !showTimeControls" class="btn btn-block btn-default">{{date.get() | date: 'MMMM dd, ha'}}</button>
@@ -10,6 +11,7 @@
             </div>
         </div>
     </div>
+    <!-- Expanded settings for changing date -->
     <div class="row form-group" ng-show="showTimeControls">
         <div class="panel panel-default">
             <div class="panel-heading">Date settings</div>
@@ -70,11 +72,14 @@
             </div>
         </div>
     </div>
+    <!-- Tabs & tables -->
     <div class="row" ng-init="tab.active='fish'">
+        <!-- Tabs for separate tables of fish data and bug data -->
         <ul class="nav nav-tabs" role="tablist">
             <li ng-class="{active: tab.active=='fish'}" class="text-center col-xs-6 col-sm-3" ng-click="tab.active = 'fish'"><a role="tab">Fish</a></li>
             <li ng-class="{active: tab.active=='bugs'}" class="text-center col-xs-6 col-sm-3" ng-click="tab.active = 'bugs'"><a role="tab">Bugs</a></li>
         </ul>
+        <!-- Table for species data -->
         <div class="tab-content">
             <table class="table table-striped">
                 <thead>
@@ -93,6 +98,7 @@
                         <td><input type="checkbox" ng-model="animal.caught"></td>
                         <td>{{animal.slot}}</td>
                         <td>{{animal.name}}</td>
+                        <!-- Provide shortened season info on mobile screens -->
                         <td>
                             <span class="visible-xs">{{animal.seasonalData().str}}</span>
                             <span class="hidden-xs">{{animal.season}}</span>
@@ -103,6 +109,7 @@
                     </tr>
                 </tbody>
                 <tfoot>
+                    <!-- Something to show if API calls failed -->
                     <tr ng-show="error.api">
                         <td colspan="100" class="danger">Failed to load encyclopedia from database, try refreshing</td>
                     </tr>
@@ -110,6 +117,7 @@
             </table>
         </div>
     </div>
+    <!-- Export link for saving todo list -->
     <div class="row">
         <div class="form-group col-sm-9 col-md-7 col-lg-6">
             <div class="panel panel-default">

@@ -1,3 +1,6 @@
+// --- cookie.js ---------------------------------------------------------------
+// Service for setting and getting cookies by key
+
 acdbApp.service('cookie', [
 function() {
     this.set = function(name, value, days) {

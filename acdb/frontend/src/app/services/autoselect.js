@@ -1,3 +1,6 @@
+// --- autoselect.js -----------------------------------------------------------
+// Directive for text boxes that select all input on click
+
 acdbApp.directive('autoSelect', function () {
     return {
         restrict: 'A',

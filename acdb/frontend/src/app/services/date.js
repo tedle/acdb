@@ -1,35 +1,42 @@
+// --- date.js -----------------------------------------------------------------
+// Service for dealing with time in a way thats more relevant to Animal Crossing
+
 acdbApp.service('date', ['$interval',
 function($interval) {
     var date = new Date();
-    var monthOffset = 0;
-    var dateOffset = 0;
-    var hoursOffset = 0;
+    // Terrible naming scheme, but consistent with Date object...
+    var offset = {
+        month: 0,
+        date: 0,
+        hours: 0
+    };
 
     // Update the clock once a minute (only need hourly resolution)
     $interval(this.get, 60 * 1000);
 
     this.get = function() {
         date = new Date();
-        date.setMonth(date.getMonth()+monthOffset);
-        date.setDate(date.getDate()+dateOffset);
-        date.setHours(date.getHours()+hoursOffset);
+        date.setMonth(date.getMonth()+offset.month);
+        date.setDate(date.getDate()+offset.date);
+        date.setHours(date.getHours()+offset.hours);
         return date;
     };
     this.reset = function() {
-        monthOffset = 0;
-        dateOffset = 0;
-        hoursOffset = 0;
+        offset.month = 0;
+        offset.date = 0;
+        offset.hours = 0;
         this.get();
     };
     this.incMonth = function(num) {
-        monthOffset += num;
+        offset.month += num;
     };
     this.incDate = function(num) {
-        dateOffset += num;
+        offset.date += num;
     };
     this.incHours = function(num) {
-        hoursOffset += num;
+        offset.hours += num;
     };
+    // Needed for storing offset in save data
     this.offsetAsHours = function() {
         var now = new Date();
         var then = this.get();

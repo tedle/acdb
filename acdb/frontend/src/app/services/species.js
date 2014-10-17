@@ -1,12 +1,18 @@
+// --- species.js --------------------------------------------------------------
+// Factory for Species class, to store and manipulate fish or bug data
+
 acdbApp.factory('Species', ['$filter', 'date',
 function($filter, date) {
     function Species(slot, name, habitat, schedule, value) {
+        // Unique ID, relating to spot at in-game encyclopedia
         this.slot = slot;
         this.name = name;
         this.habitat = habitat;
+        // Object data of times available
         this.schedule = schedule;
         this.value = value;
         this.caught = false;
+        // Long string describing times available
         this.season = prettifySeason(this.schedule);
 
         this.seasonalCache = {
@@ -15,6 +21,9 @@ function($filter, date) {
         };
     }
 
+    // Parses data on when species is available
+    // Returns object with summarised info
+    // Attempts to cache result as this is called often and is expensive
     Species.prototype.seasonalData = function() {
         // Check if cached data is up to date
         var now = date.get();
@@ -25,8 +34,11 @@ function($filter, date) {
             return this.seasonalCache.data;
         }
 
+        // 2 seasonal checks, 1 is stored to know if species is available this month
         var seasonal = false;
+        // Other is stored to know if hours & seasons match
         var tempSeasonal = false;
+        // If species is available in this time range
         var hourly = false;
         // Return data
         var availability = {
@@ -37,7 +49,7 @@ function($filter, date) {
                 month: 12,
                 hour: 24
             },
-            // Short availability string
+            // Short availability string for mobile (dirty place to put this really...)
             str: ''
         };
         angular.forEach(this.schedule, function(timeslot) {
@@ -90,21 +102,26 @@ function($filter, date) {
                 tempSeasonal = hourly = false;
             }
         }, this);
+        // Species is available right now
         if (tempSeasonal && hourly) {
             availability.code = 2;
             availability.next.month = 0;
             availability.next.hour = 0;
             availability.str = "Now";
+        // Species is available sometime today
         } else if (seasonal) {
             availability.code = 1;
             availability.next.month = 0;
             var tempHour = new Date(date.get());
             tempHour.setHours(tempHour.getHours() + availability.next.hour);
+            // Show soonest available time
             availability.str = angular.lowercase($filter('date')(tempHour, 'ha'));
+        // Species is unavailable
         } else {
             availability.code = 0;
             var tempMonth = new Date(date.get());
             tempMonth.setMonth(tempMonth.getMonth() + availability.next.month);
+            // Show soonest available month
             availability.str = $filter('date')(tempMonth, 'MMM');
         }
         this.seasonalCache.date = date.get();
@@ -112,6 +129,7 @@ function($filter, date) {
         return availability;
     };
 
+    // Takes schedule data and provides human-readable string of availability
     function prettifySeason(schedule) {
         var pretty = "";
         angular.forEach(schedule, function(timeslot, index) {

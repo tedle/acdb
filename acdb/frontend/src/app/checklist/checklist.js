@@ -1,11 +1,16 @@
+// --- checklist.js ------------------------------------------------------------
+// Controller providing a to-do list of fish & bugs caught
+
 acdbApp.controller('ChecklistController', ['$scope', 'date', 'encyclopedia', 'saveData', 
 function($scope, date, encyclopedia, saveData) {
+    // Error states incase API calls fail, can be shown in the view
     $scope.error = {
         api: false
     };
 
     $scope.date = date;
 
+    // Sort functions for re-ordering table data
     $scope.sort = {
         order: ['slot'],
         reverse: false,
@@ -34,7 +39,7 @@ function($scope, date, encyclopedia, saveData) {
         $scope.error.api = true;
     });
 
-    // Watch checkboxes for auto-save feature
+    // Watch checkboxes & date for auto-save feature
     $scope.$watch('species', function() {
         saveData.save();
     }, true);
@@ -42,5 +47,6 @@ function($scope, date, encyclopedia, saveData) {
         saveData.save();
     }, true);
 
+    // Need saveData.url() to provide export link
     $scope.saveData = saveData;
 }]);

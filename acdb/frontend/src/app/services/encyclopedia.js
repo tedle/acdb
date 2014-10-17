@@ -1,3 +1,6 @@
+// --- encyclopedia.js ---------------------------------------------------------
+// Service for getting, storing, and providing species data
+
 acdbApp.service('encyclopedia', ['$q', 'acdbApi', 'Species',
 function($q, acdbApi, Species) {
     // Need local vars with getters and setters because promises cant see 'this'
@@ -11,15 +14,17 @@ function($q, acdbApi, Species) {
         return bugs;
     };
 
+    // Hook for controllers to do something when loading is finished
     this.loaded = function() {
         return apiDeferred;
     };
 
-    // Need to update arrays manually to keep obj reference
+    // Using $q.all so this.loaded is only triggered when both bugs & fish finish
     var apiDeferred = $q.all({
         fish: acdbApi.fish(),
         bugs: acdbApi.bugs()
     }).then(function(results) {
+        // Need to update species arrays manually to keep obj reference
         results.fish.forEach(function(f) {
             fish[f.slot-1] = f;
         });

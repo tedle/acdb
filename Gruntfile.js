@@ -41,7 +41,8 @@ module.exports = function(grunt) {
                     append: true,
                     htmlmin: {
                         collapseWhitespace: true,
-                        collapseBooleanAttributes: true
+                        collapseBooleanAttributes: true,
+                        removeComments: true
                     }
                 },
                 cwd: '<%= dir.src %>app/',
