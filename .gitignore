@@ -1,6 +1,10 @@
+# Tool stuff
 .env
-.tern-project
+build/
 node_modules/
+
+# Personal stuff
+.tern-project
 *.swp
 *.pyc
 TODO

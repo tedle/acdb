@@ -23,7 +23,7 @@ module.exports = function(grunt) {
                             ' *  Source: <%= pkg.repository.url %>\n' +
                             ' *  License: <%= pkg.license %> */\n',
                 },
-                src: '<%= dir.src %>scripts/**.js',
+                src: ['<%= dir.src %>app/app.js', '<%= dir.src %>app/**/*.js'],
                 dest: '<%= dir.build %><%= pkg.name %>.js'
             }
         },
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     '<%= dir.build %>bootstrap.min.css': '<%= dir.src %>styles/bootstrap.min.css',
-                    '<%= dir.build %>style.css': ['<%= dir.src %>styles/**.css', '!<%= dir.src %>styles/bootstrap.min.css']
+                    '<%= dir.build %>style.css': ['<%= dir.src %>styles/**/*.css', '!<%= dir.src %>styles/bootstrap.min.css']
                 }
             }
         },
@@ -44,17 +44,17 @@ module.exports = function(grunt) {
                         collapseBooleanAttributes: true
                     }
                 },
-                cwd: '<%= dir.src %>',
-                src: 'templates/**.html',
+                cwd: '<%= dir.src %>app/',
+                src: '**/*.html',
                 dest: '<%= concat.javascript.dest %>'
             }
         },
         watch: {
             javascript: {
                 files: [
-                    '<%= dir.src %>scripts/**.js',
-                    '<%= dir.src %>styles/**.css',
-                    '<%= dir.src %>templates/**.html'
+                    '<%= dir.src %>app/**/*.js',
+                    '<%= dir.src %>app/**/*.html',
+                    '<%= dir.src %>styles/**/*.css'
                 ],
                 tasks: ['build']
             }
