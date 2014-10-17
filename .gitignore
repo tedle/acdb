@@ -1,6 +1,7 @@
 # Project stuff
 accf.db
 secret_key.py
+prod_static/
 
 # Tool stuff
 build/

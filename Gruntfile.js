@@ -12,6 +12,10 @@ module.exports = function(grunt) {
             _defaults: {
                 bg: true
             },
+            collectstatic: {
+                bg: false,
+                cmd: 'python <%= dir.base %>manage.py collectstatic --noinput'
+            },
             django: {
                 cmd: 'python <%= dir.base %>manage.py runserver'
             },
@@ -98,6 +102,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'uglify']);
     grunt.registerTask('build', ['concat', 'ngtemplates', 'cssmin']);
+    grunt.registerTask('package', ['build', 'uglify', 'bgShell:collectstatic']);
     grunt.registerTask('runserver', ['bgShell:django', 'watch']);
     grunt.registerTask('setup', ['copy:migrate', 'bgShell:migrate']);
 };
