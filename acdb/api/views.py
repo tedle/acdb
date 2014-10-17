@@ -29,4 +29,9 @@ def api_species(request, species):
         species_response[s['species_id']-1] \
             .setdefault('schedule', []) \
             .append(dict_schedule)
-    return HttpResponse(json.dumps(species_response, indent=4))
+
+    json_indent = None
+    if 'pretty' in request.GET:
+        json_indent = 4
+
+    return HttpResponse(json.dumps(species_response, indent=json_indent))
