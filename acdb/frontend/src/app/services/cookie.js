@@ -7,7 +7,7 @@ function() {
         var expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (days * 24 * 60 * 60 * 1000));
         var expires = 'expires=' + expiryDate.toUTCString();
-        document.cookie = name + '=' + value + '; ' + expires;
+        document.cookie = name + '=' + value + '; ' + expires + '; path=/';
     };
 
     this.get = function(name) {
